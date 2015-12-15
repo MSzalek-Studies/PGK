@@ -46,7 +46,7 @@ float angle=1.6, angleY=-0.3, ratio;
 float positionX=-5, positionY=6.75, positionZ=10;
 float rotateX=0, rotateY=-0.5, rotateZ=0;
 int moveDirection=0, rotateDirection=0;
-float moveSpeed=0.1, rotateSpeed=0.005;
+float moveSpeed=0.4, rotateSpeed=0.005;
 float *skyColor, *roofColor, *wallColor, *floorColor;
 bool menuOpen=false, isLeftButtonPressed=false;
 int mouseX=windowWidth/2, mouseY=windowHeight/2;
@@ -171,14 +171,14 @@ void initStars() {
 }
 
 void drawLight0(){
-    glPushMatrix();
+    //glPushMatrix();
     float x[]={-0.5,1,-1,0};
     glLightfv(GL_LIGHT0,GL_POSITION,x);
     refreshLooking();
-    glPopMatrix();
+    //glPopMatrix();
 }
 void drawLight1(){
-    glPushMatrix();
+    //glPushMatrix();
     float position[]={10,5,0,1};
     float ambient[]={0.2,0.2,0.2,1};
     float diffuse[]={1,1,1,1};
@@ -192,24 +192,26 @@ void drawLight1(){
     glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
     glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
     refreshLooking();
-    glPopMatrix();
+   // glPopMatrix();
 }
 void drawLight2(){
-    glPushMatrix();
-    float position[]={10,5,20,1};
-    float ambient[]={0.2,0.2,0.2,1};
+    //glPushMatrix();
+    float position[]={10,0.5,12,1};
+    float ambient[]={1,1,1,1};
     float diffuse[]={1,1,1,1};
     float specular[]={1,1,1,1};
-    float spotDirection[]={0,-1,-1};
+    float spotDirection[]={0,0,1};
     glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spotDirection);
-    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 20.0f);
-    glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 64);
+    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 45.0f);
+    glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 10);
     glLightfv(GL_LIGHT2,GL_POSITION,position);
     glLightfv(GL_LIGHT2, GL_AMBIENT, ambient);
     glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuse);
     glLightfv(GL_LIGHT2, GL_SPECULAR, specular);
+    glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.3);
+    glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.1);
     refreshLooking();
-    glPopMatrix();
+    //glPopMatrix();
 }
 
 void drawLight3(){
@@ -219,7 +221,6 @@ void drawLight3(){
     float ambient[]={0.5,0.5,0.5,0.5};
     float diffuse[]={0.2,0.2,0.2,1};
     float specular[]={1,1,1,1};
-    float spotDirection[]={0,-1,-1};
     glTranslatef(10,1,10);
     glRotatef(light_angle,0,1,0);
     glTranslatef(3,0,0);
@@ -228,10 +229,7 @@ void drawLight3(){
         glBegin(GL_POINTS);
         glVertex3f(0,0,0);
         glEnd();
-    //glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spotDirection);
-    //glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 20.0f);
-    //glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 64);
-    glLightf(GL_LIGHT3, GL_LINEAR_ATTENUATION, 1);
+    glLightf(GL_LIGHT3, GL_LINEAR_ATTENUATION, 0.5);
     glLightf(GL_LIGHT3, GL_QUADRATIC_ATTENUATION, 0.5);
     glLightfv(GL_LIGHT3,GL_POSITION,position);
     glLightfv(GL_LIGHT3, GL_AMBIENT, ambient);
