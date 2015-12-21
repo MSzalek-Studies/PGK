@@ -34,6 +34,7 @@ void drawLight1();
 void drawLight0();
 void drawLight2();
 void drawLight3();
+void initTextures();
 GLuint loadTexture(Image* image);
 
 enum kolor{
@@ -56,7 +57,7 @@ float step=0;
 int houseSize=1, houseShape=cube;
 bool light0_enabled=true, light1_enabled=true, light2_enabled=true, light3_enabled=true;
 float light_angle=0;
-GLuint floorTexture;
+GLuint floorTexture, wallTexture, roofTexture;
 
 void refreshLooking() {
     glLoadIdentity();
@@ -73,6 +74,8 @@ int main(int argc, char *argv[])
     glutInitWindowPosition(200,0);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutCreateWindow("Domki");
+        initTextures();
+
     glutReshapeFunc(Reshape);
     glutDisplayFunc(Draw);
     glShadeModel(GL_SMOOTH);
@@ -83,10 +86,6 @@ int main(int argc, char *argv[])
     glEnable(GL_LIGHT2);
     glEnable(GL_LIGHT3);
     glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_TEXTURE_2D);
-    Image* obrazek=loadBMP("C:\\Users\\Marcinus\\Desktop\\poli\\rok2\\Grafika\\GLUTY\\PGK\\grass_texture.bmp");
-    floorTexture=loadTexture(obrazek);
-    delete obrazek;
     glutIdleFunc(idle);
     if (isTurningNormal)
         glutPassiveMotionFunc(onMouseMoved);
@@ -157,6 +156,19 @@ void initColors() {
     skyColor=getColorArray(blekitny);
     roofColor=getColorArray(fioletowy);
     wallColor=getColorArray(zolty);
+}
+void initTextures() {
+    glEnable(GL_TEXTURE_2D);
+
+    Image* obrazek=loadBMP("C:\\Users\\Marcinus\\Desktop\\poli\\rok2\\Grafika\\GLUTY\\PGK\\grass_texture.bmp");
+    floorTexture=loadTexture(obrazek);
+    delete obrazek;
+    Image* obrazek2=loadBMP("C:\\Users\\Marcinus\\Desktop\\poli\\rok2\\Grafika\\GLUTY\\PGK\\brick_texture.bmp");
+    wallTexture=loadTexture(obrazek2);
+    delete obrazek2;
+    Image* obrazek3=loadBMP("C:\\Users\\Marcinus\\Desktop\\poli\\rok2\\Grafika\\GLUTY\\PGK\\roof_texture.bmp");
+    roofTexture=loadTexture(obrazek3);
+    delete obrazek3;
 }
 
 //****DRAWING FUNCTIONS*****//
@@ -237,7 +249,6 @@ void drawLight2(){
     refreshLooking();
     //glPopMatrix();
 }
-
 void drawLight3(){
 
     glPushMatrix();
@@ -266,16 +277,17 @@ void drawLight3(){
 void drawHouses() {
     int housesInRow=10;
     int distanceBetween=5;
-    Image* obrazek=loadBMP("C:\\Users\\Marcinus\\Desktop\\poli\\rok2\\Grafika\\GLUTY\\PGK\\brick_texture.bmp");
-    GLuint wall_texture=loadTexture(obrazek);
-    delete obrazek;
+    Image* obrazek2=loadBMP("C:\\Users\\Marcinus\\Desktop\\poli\\rok2\\Grafika\\GLUTY\\PGK\\brick_texture.bmp");
+    wallTexture=loadTexture(obrazek2);
+    delete obrazek2;
     for (int i=0; i<housesInRow; i++)
     {
         for (int j=0; j<housesInRow; j++)
         {
             glPushMatrix();
             glTranslatef(distanceBetween*i,0,distanceBetween*j);
-            House house(houseSize,houseShape,wallColor,wall_texture,roofColor,wall_texture);
+
+            House house(houseSize,houseShape,wallColor,wallTexture,roofColor,roofTexture);
             house.display();
             glPopMatrix();
         }

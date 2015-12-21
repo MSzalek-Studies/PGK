@@ -37,7 +37,7 @@ void House::display()
         case sphere: glutSolidSphere(size/2,20,20);
                 break;
     }
-
+    drawRoof();
     glPopMatrix();
 }
 
@@ -64,9 +64,20 @@ void House::drawCube()
 
 void House::drawRoof()
 {
+    float vertex[5][3]={
+        0,size,0,
+        size,size,0,
+        size,size,size,
+        0,size,size,
+        size/2, size*3/2, size/2
+        };
     glPushMatrix();
     glColor3fv(roofColor);
-
+    glBindTexture(GL_TEXTURE_2D,roofTexture);
+    drawTriangle(vertex[0],vertex[1], vertex[4]);
+    drawTriangle(vertex[1],vertex[2], vertex[4]);
+    drawTriangle(vertex[2],vertex[3], vertex[4]);
+    drawTriangle(vertex[3],vertex[0], vertex[4]);
     glPopMatrix();
 
 }
