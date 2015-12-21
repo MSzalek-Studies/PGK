@@ -45,8 +45,10 @@
 			<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/lib" />
 		</Linker>
 		<Unit filename="include/House.h" />
+		<Unit filename="include/imageloader.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/House.cpp" />
+		<Unit filename="src/imageloader.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

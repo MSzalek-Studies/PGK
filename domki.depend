@@ -274,3 +274,43 @@
 	<GL/glut.h>
 	<iostream>
 
+1450726704 source:c:\users\marcinus\desktop\poli\rok2\grafika\gluty\pgk\src\house.cpp
+	"House.h"
+	<windows.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<GL/glut.h>
+	<iostream>
+	"imageloader.h"
+
+1450733129 c:\users\marcinus\desktop\poli\rok2\grafika\gluty\pgk\include\house.h
+	<GL/gl.h>
+	<GL/glu.h>
+	<GL/glut.h>
+
+1450733064 source:c:\users\marcinus\desktop\poli\rok2\grafika\gluty\pgk\main.cpp
+	<windows.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<GL/glut.h>
+	<stdlib.h>
+	<iostream>
+	<cmath>
+	"imageloader.h"
+	"House.h"
+
+1450628328 source:c:\users\marcinus\desktop\poli\rok2\grafika\gluty\pgk\src\imageloader.cpp
+	<assert.h>
+	<fstream>
+	"imageloader.h"
+
+1341003170 c:\program files (x86)\codeblocks\mingw\include\assert.h
+	<_mingw.h>
+
+1450628377 c:\users\marcinus\desktop\poli\rok2\grafika\gluty\pgk\include\imageloader.h
+
+1450627792 source:c:\users\marcinus\desktop\poli\rok2\grafika\gluty\pgk\src\utils.cpp
+	"Utils.h"
+
+1450627791 c:\users\marcinus\desktop\poli\rok2\grafika\gluty\pgk\include\utils.h
+

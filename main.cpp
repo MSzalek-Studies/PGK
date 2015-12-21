@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <cmath>
+#include "imageloader.h"
 #include "House.h"
 void pressedKey(int key, int x, int y);
 void Reshape(int width, int height);
@@ -33,6 +34,7 @@ void drawLight1();
 void drawLight0();
 void drawLight2();
 void drawLight3();
+GLuint loadTexture(Image* image);
 
 enum kolor{
 czarny, czerwony, niebieski, zielony, bialy, blekitny, zolty, fioletowy
@@ -54,6 +56,7 @@ float step=0;
 int houseSize=1, houseShape=cube;
 bool light0_enabled=true, light1_enabled=true, light2_enabled=true, light3_enabled=true;
 float light_angle=0;
+GLuint floorTexture;
 
 void refreshLooking() {
     glLoadIdentity();
@@ -80,6 +83,10 @@ int main(int argc, char *argv[])
     glEnable(GL_LIGHT2);
     glEnable(GL_LIGHT3);
     glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_TEXTURE_2D);
+    Image* obrazek=loadBMP("C:\\Users\\Marcinus\\Desktop\\poli\\rok2\\Grafika\\GLUTY\\PGK\\grass_texture.bmp");
+    floorTexture=loadTexture(obrazek);
+    delete obrazek;
     glutIdleFunc(idle);
     if (isTurningNormal)
         glutPassiveMotionFunc(onMouseMoved);
@@ -153,6 +160,23 @@ void initColors() {
 }
 
 //****DRAWING FUNCTIONS*****//
+GLuint loadTexture(Image* image) {
+	GLuint textureId;
+	glGenTextures(1, &textureId); //Make room for our texture
+	glBindTexture(GL_TEXTURE_2D, textureId); //Tell OpenGL which texture to edit
+	//Map the image to the texture
+	glTexImage2D(GL_TEXTURE_2D,                //Always GL_TEXTURE_2D
+				 0,                            //0 for now
+				 GL_RGB,                       //Format OpenGL uses for image
+				 image->width, image->height,  //Width and height
+				 0,                            //The border of the image
+				 GL_RGB, //GL_RGB, because pixels are stored in RGB format
+				 GL_UNSIGNED_BYTE, //GL_UNSIGNED_BYTE, because pixels are stored
+				                   //as unsigned numbers
+				 image->pixels);               //The actual pixel data
+	return textureId; //Returns the id of the texture
+}
+
 void initStars() {
     if (skyColor[0]==0 && skyColor[1]==0 && skyColor[2]==0)
     {
@@ -242,33 +266,47 @@ void drawLight3(){
 void drawHouses() {
     int housesInRow=10;
     int distanceBetween=5;
+    Image* obrazek=loadBMP("C:\\Users\\Marcinus\\Desktop\\poli\\rok2\\Grafika\\GLUTY\\PGK\\brick_texture.bmp");
+    GLuint wall_texture=loadTexture(obrazek);
+    delete obrazek;
     for (int i=0; i<housesInRow; i++)
     {
         for (int j=0; j<housesInRow; j++)
         {
             glPushMatrix();
             glTranslatef(distanceBetween*i,0,distanceBetween*j);
-            House house(houseSize,houseShape,wallColor,roofColor);
+            House house(houseSize,houseShape,wallColor,wall_texture,roofColor,wall_texture);
             house.display();
             glPopMatrix();
         }
     }
+   // glDisable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
+    //glDisable(GL_TEXTURE_GEN_T);
 }
 
 void drawSquareFloor(int sideSize) {
     int startingX=-50;
     int startingZ=-50;
+    float squareSize=10;
 
     glColor3fv(floorColor);
-    for (int x=startingX; x<startingX+sideSize; x++)
+    glBindTexture(GL_TEXTURE_2D, floorTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    for (int x=startingX; x<startingX+sideSize; x+=squareSize)
     {
-        for(int z=startingZ; z<startingZ+sideSize; z++)
+        for(int z=startingZ; z<startingZ+sideSize; z+=squareSize)
         {
             glBegin(GL_QUADS);
+                glTexCoord2f(0,0);
                 glVertex3f(x,0,z);
-                glVertex3f(x+1,0,z);
-                glVertex3f(x+1,0,z+1);
-                glVertex3f(x,0,z+1);
+                glTexCoord2f(1,0);
+                glVertex3f(x+squareSize,0,z);
+                glTexCoord2f(1,1);
+                glVertex3f(x+squareSize,0,z+squareSize);
+                glTexCoord2f(0,1);
+                glVertex3f(x,0,z+squareSize);
             glEnd();
         }
     }
