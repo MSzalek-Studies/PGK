@@ -9,7 +9,9 @@ enum Shape {teapot, sphere, cube};
 class House
 {
     public:
-
+        static GLint minFilter;
+        static GLint magFilter;
+        static void switchFilters();
         House(float size, int shape, float* wallColor, GLuint wallTexture, float* roofColor, GLuint roofTexture);
         void display();
         virtual ~House();

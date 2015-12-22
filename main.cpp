@@ -58,6 +58,8 @@ int houseSize=1, houseShape=cube;
 bool light0_enabled=true, light1_enabled=true, light2_enabled=true, light3_enabled=true;
 float light_angle=0;
 GLuint floorTexture, wallTexture, roofTexture;
+bool texturesEnabled=true;
+GLint textureEnvMode = GL_DECAL, floorMinFilter=GL_NEAREST, floorMagFilter=GL_NEAREST;
 
 void refreshLooking() {
     glLoadIdentity();
@@ -74,8 +76,7 @@ int main(int argc, char *argv[])
     glutInitWindowPosition(200,0);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutCreateWindow("Domki");
-        initTextures();
-
+    initTextures();
     glutReshapeFunc(Reshape);
     glutDisplayFunc(Draw);
     glShadeModel(GL_SMOOTH);
@@ -155,18 +156,20 @@ void initColors() {
     floorColor=getColorArray(zielony);
     skyColor=getColorArray(blekitny);
     roofColor=getColorArray(fioletowy);
-    wallColor=getColorArray(zolty);
+    wallColor=getColorArray(niebieski);
 }
 void initTextures() {
     glEnable(GL_TEXTURE_2D);
-
-    Image* obrazek=loadBMP("C:\\Users\\Marcinus\\Desktop\\poli\\rok2\\Grafika\\GLUTY\\PGK\\grass_texture.bmp");
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, textureEnvMode);
+    float alphaColor[]={1,0,1,0.5};
+    glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, alphaColor);
+    Image* obrazek=loadBMP("C:\\Users\\szale_000\\Desktop\\grafika\\grass_texture.bmp");
     floorTexture=loadTexture(obrazek);
     delete obrazek;
-    Image* obrazek2=loadBMP("C:\\Users\\Marcinus\\Desktop\\poli\\rok2\\Grafika\\GLUTY\\PGK\\brick_texture.bmp");
+    Image* obrazek2=loadBMP("C:\\Users\\szale_000\\Desktop\\grafika\\brick_texture.bmp");
     wallTexture=loadTexture(obrazek2);
     delete obrazek2;
-    Image* obrazek3=loadBMP("C:\\Users\\Marcinus\\Desktop\\poli\\rok2\\Grafika\\GLUTY\\PGK\\roof_texture.bmp");
+    Image* obrazek3=loadBMP("C:\\Users\\szale_000\\Desktop\\grafika\\roof_texture.bmp");
     roofTexture=loadTexture(obrazek3);
     delete obrazek3;
 }
@@ -188,7 +191,13 @@ GLuint loadTexture(Image* image) {
 				 image->pixels);               //The actual pixel data
 	return textureId; //Returns the id of the texture
 }
-
+void switchTexturing(){
+    if (texturesEnabled)
+        glDisable(GL_TEXTURE_2D);
+    else
+        glEnable(GL_TEXTURE_2D);
+    texturesEnabled=!texturesEnabled;
+}
 void initStars() {
     if (skyColor[0]==0 && skyColor[1]==0 && skyColor[2]==0)
     {
@@ -209,7 +218,13 @@ void initStars() {
 void drawLight0(){
     //glPushMatrix();
     float x[]={-0.5,1,-1,0};
+    float ambient[]={0.2,0.2,0.2,1};
+    float diffuse[]={1,1,1,1};
+    float specular[]={1,1,1,1};
     glLightfv(GL_LIGHT0,GL_POSITION,x);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
     refreshLooking();
     //glPopMatrix();
 }
@@ -273,11 +288,31 @@ void drawLight3(){
     refreshLooking();
     glPopMatrix();
 }
+void switchLightning(bool &light_enabled, GLenum mGL_Light) {
+    if (light_enabled)
+        glDisable(mGL_Light);
+    else
+        glEnable(mGL_Light);
+    light_enabled=!light_enabled;
+}
+void switchTextureEnv(){
+    if (textureEnvMode==GL_DECAL)
+        textureEnvMode=GL_MODULATE;
+    else if (textureEnvMode==GL_MODULATE)
+        textureEnvMode=GL_BLEND;
+    else
+        textureEnvMode=GL_DECAL;
 
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, textureEnvMode);
+}
+void switchFloorTextureMode(){
+    floorMinFilter= floorMinFilter == GL_NEAREST ? GL_LINEAR : GL_NEAREST;
+    floorMagFilter= floorMagFilter == GL_NEAREST ? GL_LINEAR : GL_NEAREST;
+}
 void drawHouses() {
     int housesInRow=10;
     int distanceBetween=5;
-    Image* obrazek2=loadBMP("C:\\Users\\Marcinus\\Desktop\\poli\\rok2\\Grafika\\GLUTY\\PGK\\brick_texture.bmp");
+    Image* obrazek2=loadBMP("C:\\Users\\szale_000\\Desktop\\grafika\\brick_texture.bmp");
     wallTexture=loadTexture(obrazek2);
     delete obrazek2;
     for (int i=0; i<housesInRow; i++)
@@ -292,8 +327,6 @@ void drawHouses() {
             glPopMatrix();
         }
     }
-   // glDisable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
-    //glDisable(GL_TEXTURE_GEN_T);
 }
 
 void drawSquareFloor(int sideSize) {
@@ -303,8 +336,8 @@ void drawSquareFloor(int sideSize) {
 
     glColor3fv(floorColor);
     glBindTexture(GL_TEXTURE_2D, floorTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, floorMinFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, floorMagFilter);
 
     for (int x=startingX; x<startingX+sideSize; x+=squareSize)
     {
@@ -340,6 +373,10 @@ void pressedKeyboardKey(unsigned char key, int x, int y) {
         case 'Q': positionY+=0.1; break;
         case 'e':
         case 'E': positionY-=0.1; break;
+        case '1': switchLightning(light0_enabled, GL_LIGHT0); break;
+        case '2': switchLightning(light1_enabled, GL_LIGHT1); break;
+        case '3': switchLightning(light2_enabled, GL_LIGHT2); break;
+        case '4': switchLightning(light3_enabled, GL_LIGHT3); break;
     }
 }
 
@@ -364,34 +401,10 @@ void pressedKey(int key, int x, int y) {
         case GLUT_KEY_RIGHT: rotateDirection=1; break;
         case GLUT_KEY_UP: moveDirection=1; break;
         case GLUT_KEY_DOWN: moveDirection=-1; break;
-        case GLUT_KEY_F1:
-            if (light0_enabled)
-                glDisable(GL_LIGHT0);
-            else
-                glEnable(GL_LIGHT0);
-            light0_enabled=!light0_enabled;
-            break;
-        case GLUT_KEY_F2:
-            if (light1_enabled)
-                glDisable(GL_LIGHT1);
-            else
-                glEnable(GL_LIGHT1);
-            light1_enabled=!light1_enabled;
-            break;
-        case GLUT_KEY_F3:
-            if (light2_enabled)
-                glDisable(GL_LIGHT2);
-            else
-                glEnable(GL_LIGHT2);
-            light2_enabled=!light2_enabled;
-            break;
-        case GLUT_KEY_F4:
-            if (light3_enabled)
-                glDisable(GL_LIGHT3);
-            else
-                glEnable(GL_LIGHT3);
-            light3_enabled=!light3_enabled;
-            break;
+        case GLUT_KEY_F1: House::switchFilters(); break;
+        case GLUT_KEY_F2: switchFloorTextureMode(); break;
+        case GLUT_KEY_F3: switchTextureEnv(); break;
+        case GLUT_KEY_F4: switchTexturing(); break;
     }
 }
 
