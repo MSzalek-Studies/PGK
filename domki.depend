@@ -58,11 +58,11 @@
 
 1301111162 c:\program files (x86)\codeblocks\mingw\include\winerror.h
 
-1341003176 c:\program files (x86)\codeblocks\mingw\include\string.h
+1341006776 c:\program files (x86)\codeblocks\mingw\include\string.h
 	<_mingw.h>
 	<stddef.h>
 
-1341003170 c:\program files (x86)\codeblocks\mingw\include\_mingw.h
+1341006770 c:\program files (x86)\codeblocks\mingw\include\_mingw.h
 
 1301111148 c:\program files (x86)\codeblocks\mingw\include\basetsd.h
 
@@ -130,7 +130,7 @@
 
 1301111158 c:\program files (x86)\codeblocks\mingw\include\rpcnterr.h
 
-1341003172 c:\program files (x86)\codeblocks\mingw\include\excpt.h
+1341006772 c:\program files (x86)\codeblocks\mingw\include\excpt.h
 	<_mingw.h>
 	<windef.h>
 
@@ -192,7 +192,7 @@
 	<objidl.h>
 	<cguid.h>
 
-1341003176 c:\program files (x86)\codeblocks\mingw\include\stdlib.h
+1341006776 c:\program files (x86)\codeblocks\mingw\include\stdlib.h
 	<_mingw.h>
 	<stddef.h>
 
@@ -304,7 +304,7 @@
 	<fstream>
 	"imageloader.h"
 
-1341003170 c:\program files (x86)\codeblocks\mingw\include\assert.h
+1341006770 c:\program files (x86)\codeblocks\mingw\include\assert.h
 	<_mingw.h>
 
 1450628377 c:\users\marcinus\desktop\poli\rok2\grafika\gluty\pgk\include\imageloader.h
@@ -313,4 +313,97 @@
 	"Utils.h"
 
 1450627791 c:\users\marcinus\desktop\poli\rok2\grafika\gluty\pgk\include\utils.h
+
+1450792878 source:c:\users\szale_000\desktop\grafika\main.cpp
+	<windows.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<GL/glut.h>
+	<stdlib.h>
+	<iostream>
+	<cmath>
+	"imageloader.h"
+	"House.h"
+	<cstring>
+
+1450767569 c:\users\szale_000\desktop\grafika\include\imageloader.h
+
+1450782737 c:\users\szale_000\desktop\grafika\include\house.h
+	<GL/gl.h>
+	<GL/glu.h>
+	<GL/glut.h>
+
+1450788247 source:c:\users\szale_000\desktop\grafika\src\house.cpp
+	"House.h"
+	<windows.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<GL/glut.h>
+	<iostream>
+	"imageloader.h"
+
+1450767569 source:c:\users\szale_000\desktop\grafika\src\imageloader.cpp
+	<assert.h>
+	<fstream>
+	"imageloader.h"
+
+1451665888 source:d:\prywatne\grafika\main.cpp
+	<windows.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<GL/glut.h>
+	<stdlib.h>
+	<iostream>
+	<cmath>
+	"imageloader.h"
+	"House.h"
+	"Box.h"
+	"Tasma.h"
+	<cstring>
+
+1450767569 d:\prywatne\grafika\include\imageloader.h
+
+1450782737 d:\prywatne\grafika\include\house.h
+	<GL/gl.h>
+	<GL/glu.h>
+	<GL/glut.h>
+
+1450788247 source:d:\prywatne\grafika\src\house.cpp
+	"House.h"
+	<windows.h>
+	<GL/gl.h>
+	<GL/glu.h>
+	<GL/glut.h>
+	<iostream>
+	"imageloader.h"
+
+1450767569 source:d:\prywatne\grafika\src\imageloader.cpp
+	<assert.h>
+	<fstream>
+	"imageloader.h"
+
+1450867122 d:\prywatne\grafika\include\box.h
+
+1451569211 source:d:\prywatne\grafika\src\box.cpp
+	"Box.h"
+	"GL/glu.h"
+	"Gl/glut.h"
+
+1450876901 source:d:\prywatne\grafika\src\utils.cpp
+	"Utils.h"
+
+1450876901 d:\prywatne\grafika\include\utils.h
+
+1451874057 source:d:\prywatne\grafika\src\tasma.cpp
+	"Tasma.h"
+	<GL/glu.h>
+	<GL/glut.h>
+	<cmath>
+	"imageloader.h"
+	<iostream>
+
+1451874096 d:\prywatne\grafika\include\tasma.h
+	<GL/gl.h>
+	<GL/glut.h>
+	"imageloader.h"
 

@@ -7,6 +7,9 @@
 #include <cmath>
 #include "imageloader.h"
 #include "House.h"
+#include "Box.h"
+#include "Tasma.h"
+#include <cstring>
 void pressedKey(int key, int x, int y);
 void Reshape(int width, int height);
 void Draw();
@@ -36,6 +39,9 @@ void drawLight2();
 void drawLight3();
 void initTextures();
 GLuint loadTexture(Image* image);
+void drawText(const char *text, int length, int x, int y);
+void drawInstructions();
+Box* findBox(int x, int y);
 
 enum kolor{
 czarny, czerwony, niebieski, zielony, bialy, blekitny, zolty, fioletowy
@@ -46,10 +52,10 @@ using namespace std;
 bool isTurningNormal=false; //DO USTAWIENIA
 int windowHeight=600, windowWidth=800;
 float angle=1.6, angleY=-0.3, ratio;
-float positionX=-5, positionY=6.75, positionZ=10;
+float positionX=-5, positionY=2, positionZ=0;
 float rotateX=0, rotateY=-0.5, rotateZ=0;
 int moveDirection=0, rotateDirection=0;
-float moveSpeed=0.4, rotateSpeed=0.005;
+float moveSpeed=0.1, rotateSpeed=0.005;
 float *skyColor, *roofColor, *wallColor, *floorColor;
 bool menuOpen=false, isLeftButtonPressed=false;
 int mouseX=windowWidth/2, mouseY=windowHeight/2;
@@ -57,9 +63,11 @@ float step=0;
 int houseSize=1, houseShape=cube;
 bool light0_enabled=true, light1_enabled=true, light2_enabled=true, light3_enabled=true;
 float light_angle=0;
-GLuint floorTexture, wallTexture, roofTexture;
+GLuint floorTexture, wallTexture, roofTexture, tasmaTexture;
 bool texturesEnabled=true;
 GLint textureEnvMode = GL_DECAL, floorMinFilter=GL_NEAREST, floorMagFilter=GL_NEAREST;
+Box* box;
+Tasma* tasma;
 
 void refreshLooking() {
     glLoadIdentity();
@@ -103,11 +111,18 @@ int main(int argc, char *argv[])
     glutSpecialUpFunc(releasedKey);
     glutEntryFunc(onMouseEntry);
     glutMouseFunc(onMouseButtonPressed);
+    float tab[3]={0,0,0};
+    box=new Box(tab,5);
+    float point[3]={-10,0,-10};
+    tasma=new Tasma(point);
     glutMainLoop();
     return EXIT_SUCCESS;
 }
 
 void idle() {
+
+    light_angle+=2;
+    tasma->increaseDisplacement();
     glutPostRedisplay();
 }
 
@@ -115,14 +130,16 @@ void Draw() {
     glClearColor(skyColor[0],skyColor[1],skyColor[2],0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    drawInstructions();
     drawSquareFloor(100);
-
     move(moveDirection);
     turn(rotateDirection,0);
 
     drawHouses();
+    tasma->draw();
 
-    light_angle+=2;
+    box->display();
+
     if (light0_enabled)
         drawLight0();
     if (light1_enabled)
@@ -131,6 +148,8 @@ void Draw() {
         drawLight2();
     if (light3_enabled)
         drawLight3();
+
+    //cout<<angle<<" "<<angleY<<endl;
     glutSwapBuffers();
 }
 
@@ -161,20 +180,42 @@ void initColors() {
 void initTextures() {
     glEnable(GL_TEXTURE_2D);
     glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, textureEnvMode);
+
     float alphaColor[]={1,0,1,0.5};
     glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, alphaColor);
-    Image* obrazek=loadBMP("C:\\Users\\szale_000\\Desktop\\grafika\\grass_texture.bmp");
+    Image* obrazek=loadBMP("D:\\Prywatne\\grafika\\grass_texture.bmp");
     floorTexture=loadTexture(obrazek);
     delete obrazek;
-    Image* obrazek2=loadBMP("C:\\Users\\szale_000\\Desktop\\grafika\\brick_texture.bmp");
+    Image* obrazek2=loadBMP("D:\\Prywatne\\grafika\\brick_texture.bmp");
     wallTexture=loadTexture(obrazek2);
     delete obrazek2;
-    Image* obrazek3=loadBMP("C:\\Users\\szale_000\\Desktop\\grafika\\roof_texture.bmp");
+    Image* obrazek3=loadBMP("D:\\Prywatne\\grafika\\roof_texture.bmp");
     roofTexture=loadTexture(obrazek3);
     delete obrazek3;
+    Image* obrazek4=loadBMP("D:\\Prywatne\\grafika\\brick_texture.bmp");
+    tasmaTexture=loadTexture(obrazek4);
+    delete obrazek4;
 }
 
 //****DRAWING FUNCTIONS*****//
+void drawInstructions(){
+    string str="F1 - tekstury domkow LINEAR/NEAREST";
+    drawText(str.c_str(), str.length(), 5, 13);
+    str="F2 - tekstury domkow LINEAR/NEAREST";
+    drawText(str.c_str(), str.length(), 5, 26);
+    str="F3 - zmiana mieszania tekstur DECAL/MODULATE/BLEND";
+    drawText(str.c_str(), str.length(), 5, 39);
+    str="F4 - wylaczenie/wlaczenie tekstur";
+    drawText(str.c_str(), str.length(), 5, 52);
+    str="1 - swiatlo globalne";
+    drawText(str.c_str(), str.length(), 5, 65);
+    str="2 - reflektor 1";
+    drawText(str.c_str(), str.length(), 5, 78);
+    str="3 - reflektor 2";
+    drawText(str.c_str(), str.length(), 5, 91);
+    str="4 - swiatlo punktowe";
+    drawText(str.c_str(), str.length(), 5, 104);
+}
 GLuint loadTexture(Image* image) {
 	GLuint textureId;
 	glGenTextures(1, &textureId); //Make room for our texture
@@ -214,7 +255,6 @@ void initStars() {
         }
     }
 }
-
 void drawLight0(){
     //glPushMatrix();
     float x[]={-0.5,1,-1,0};
@@ -229,7 +269,7 @@ void drawLight0(){
     //glPopMatrix();
 }
 void drawLight1(){
-    //glPushMatrix();
+    glPushMatrix();
     float position[]={10,5,0,1};
     float ambient[]={0.2,0.2,0.2,1};
     float diffuse[]={1,1,1,1};
@@ -243,10 +283,10 @@ void drawLight1(){
     glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
     glLightfv(GL_LIGHT1, GL_SPECULAR, specular);
     refreshLooking();
-   // glPopMatrix();
+    glPopMatrix();
 }
 void drawLight2(){
-    //glPushMatrix();
+    glPushMatrix();
     float position[]={10,0.5,12,1};
     float ambient[]={1,1,1,1};
     float diffuse[]={1,1,1,1};
@@ -262,7 +302,7 @@ void drawLight2(){
     glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.3);
     glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.1);
     refreshLooking();
-    //glPopMatrix();
+    glPopMatrix();
 }
 void drawLight3(){
 
@@ -312,18 +352,19 @@ void switchFloorTextureMode(){
 void drawHouses() {
     int housesInRow=10;
     int distanceBetween=5;
-    Image* obrazek2=loadBMP("C:\\Users\\szale_000\\Desktop\\grafika\\brick_texture.bmp");
-    wallTexture=loadTexture(obrazek2);
-    delete obrazek2;
+    //Image* obrazek2=loadBMP("C:\\Users\\szale_000\\Desktop\\grafika\\brick_texture.bmp");
+    //wallTexture=loadTexture(obrazek2);
+    //delete obrazek2;
+    glBindTexture(GL_TEXTURE_2D, wallTexture);
     for (int i=0; i<housesInRow; i++)
     {
         for (int j=0; j<housesInRow; j++)
         {
             glPushMatrix();
             glTranslatef(distanceBetween*i,0,distanceBetween*j);
-
-            House house(houseSize,houseShape,wallColor,wallTexture,roofColor,roofTexture);
-            house.display();
+            House* house=new House(houseSize,houseShape,wallColor,wallTexture,roofColor,roofTexture);
+            house->display();
+            delete house;
             glPopMatrix();
         }
     }
@@ -332,17 +373,19 @@ void drawHouses() {
 void drawSquareFloor(int sideSize) {
     int startingX=-50;
     int startingZ=-50;
-    float squareSize=10;
+    float squareSize=1;
 
     glColor3fv(floorColor);
     glBindTexture(GL_TEXTURE_2D, floorTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, floorMinFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, floorMagFilter);
+                //glPushMatrix();
 
     for (int x=startingX; x<startingX+sideSize; x+=squareSize)
     {
         for(int z=startingZ; z<startingZ+sideSize; z+=squareSize)
         {
+
             glBegin(GL_QUADS);
                 glTexCoord2f(0,0);
                 glVertex3f(x,0,z);
@@ -353,8 +396,10 @@ void drawSquareFloor(int sideSize) {
                 glTexCoord2f(0,1);
                 glVertex3f(x,0,z+squareSize);
             glEnd();
+
         }
     }
+                    glPopMatrix();
 }
 
 //*****KEYBOARD FUNCTIONS*****//
@@ -429,7 +474,7 @@ void onMouseMoved(int x, int y) {
     {
         if (!menuOpen)
         {
-           int horizontalDirection = isTurningNormal ? x-mouseX : mouseX-x ;
+            int horizontalDirection = isTurningNormal ? x-mouseX : mouseX-x ;
             int verticalDirection = isTurningNormal ? mouseY-y : y-mouseY ;
             turn(horizontalDirection,verticalDirection);
         }
@@ -457,6 +502,10 @@ void onMouseButtonPressed(int button, int state, int x, int y) {
 
     isLeftButtonPressed = state == GLUT_DOWN;
     if (isLeftButtonPressed){
+        if (findBox(x,y)!=NULL)
+                cout<<"sialalalal"<<endl;
+        else
+            cout<<"kupaaa"<<endl;
         mouseX=x;
         mouseY=y;
     }
@@ -491,6 +540,29 @@ void turn(int directionHorizontally, int directionVertically) {
 }
 
 //*****UTILS*****//
+void drawText(const char *text, int length, int x, int y)
+{
+    glPushMatrix();
+    glColor3f(1,0,0);
+    glMatrixMode(GL_PROJECTION);
+    double *matrix = new double[16];
+    glGetDoublev(GL_PROJECTION_MATRIX, matrix);
+    glLoadIdentity();
+    glOrtho(0,windowWidth, windowHeight, 0, -5, 5);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glPushMatrix();
+    glLoadIdentity();
+    glRasterPos2f(x,y);
+    for (int i=0; i<length; i++)
+        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, (int)text[i]);
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixd(matrix);
+    glMatrixMode((GL_MODELVIEW));
+    glPopMatrix();
+}
+
 float* getColorArray(int color) {
     switch (color)
     {
@@ -596,3 +668,35 @@ void createMenus() {
 }
 
 void pointlessFunction(int a) {}
+
+//TAŒMA FUNCTIONS
+Box* findBox(int x, int y){
+    int horizontalDirection = x-windowWidth/2 ;
+    int verticalDirection =  windowHeight/2-y ;
+
+    //TODO
+    float mAngleXZ=angle+horizontalDirection*M_PI_4/(1.0*windowWidth);
+    float mAngleY=angleY+verticalDirection*M_PI_4/(1.0*windowHeight);
+
+
+    float mRotateY=sin(mAngleY);
+    float mRotateX=sin(mAngleXZ)*cos(mAngleY);
+    float mRotateZ=cos(mAngleXZ)*cos(mAngleY);
+
+    cout<<horizontalDirection<<" "<<verticalDirection<<endl;
+    cout<<angle<<" "<<angleY<<endl;
+    cout<<mAngleXZ<<" "<<mAngleY<<endl;
+    cout<<mRotateX<<" "<<mRotateY<<" "<<mRotateZ<<endl;
+    float point[]={positionX,positionY,positionZ};
+    for (int i=0; i<100; i+=1)
+    {
+        cout<<point[0]<<" "<<point[1]<<" "<<point[2]<<endl;
+        if (box->containsPoint(point))
+            return box;
+
+        point[0]+=mRotateX;
+        point[1]+=mRotateY;
+        point[2]-=mRotateZ;
+    }
+    return NULL;
+}

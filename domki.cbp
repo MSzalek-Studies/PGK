@@ -44,10 +44,16 @@
 			<Add library="gdi32" />
 			<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/lib" />
 		</Linker>
+		<Unit filename="include/Box.h" />
 		<Unit filename="include/House.h" />
+		<Unit filename="include/Tasma.h" />
+		<Unit filename="include/Utils.h" />
 		<Unit filename="include/imageloader.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/Box.cpp" />
 		<Unit filename="src/House.cpp" />
+		<Unit filename="src/Tasma.cpp" />
+		<Unit filename="src/Utils.cpp" />
 		<Unit filename="src/imageloader.cpp" />
 		<Extensions>
 			<code_completion />
