@@ -347,7 +347,7 @@
 	<fstream>
 	"imageloader.h"
 
-1451665888 source:d:\prywatne\grafika\main.cpp
+1451896485 source:d:\prywatne\grafika\main.cpp
 	<windows.h>
 	<GL/gl.h>
 	<GL/glu.h>
@@ -382,9 +382,9 @@
 	<fstream>
 	"imageloader.h"
 
-1450867122 d:\prywatne\grafika\include\box.h
+1451897004 d:\prywatne\grafika\include\box.h
 
-1451569211 source:d:\prywatne\grafika\src\box.cpp
+1451897004 source:d:\prywatne\grafika\src\box.cpp
 	"Box.h"
 	"GL/glu.h"
 	"Gl/glut.h"
@@ -394,16 +394,20 @@
 
 1450876901 d:\prywatne\grafika\include\utils.h
 
-1451874057 source:d:\prywatne\grafika\src\tasma.cpp
+1451899042 source:d:\prywatne\grafika\src\tasma.cpp
 	"Tasma.h"
 	<GL/glu.h>
 	<GL/glut.h>
 	<cmath>
 	"imageloader.h"
+	"Box.h"
 	<iostream>
+	<vector>
 
-1451874096 d:\prywatne\grafika\include\tasma.h
+1451911316 d:\prywatne\grafika\include\tasma.h
 	<GL/gl.h>
 	<GL/glut.h>
 	"imageloader.h"
+	"Box.h"
+	<vector>
 

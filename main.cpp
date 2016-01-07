@@ -111,8 +111,8 @@ int main(int argc, char *argv[])
     glutSpecialUpFunc(releasedKey);
     glutEntryFunc(onMouseEntry);
     glutMouseFunc(onMouseButtonPressed);
-    float tab[3]={0,0,0};
-    box=new Box(tab,5);
+    float tab[3]={10,10,10};
+    box=new Box(tab);
     float point[3]={-10,0,-10};
     tasma=new Tasma(point);
     glutMainLoop();
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 void idle() {
 
     light_angle+=2;
-    tasma->increaseDisplacement();
+    tasma->keepProduction();
     glutPostRedisplay();
 }
 
@@ -502,10 +502,12 @@ void onMouseButtonPressed(int button, int state, int x, int y) {
 
     isLeftButtonPressed = state == GLUT_DOWN;
     if (isLeftButtonPressed){
-        if (findBox(x,y)!=NULL)
+       /* if (findBox(x,y)!=NULL)
                 cout<<"sialalalal"<<endl;
         else
-            cout<<"kupaaa"<<endl;
+            cout<<"kupaaa"<<endl;*/
+        float position[3]={positionX,positionY,positionZ};
+        tasma->Click(x,y,windowWidth,windowHeight,angle,angleY,position);
         mouseX=x;
         mouseY=y;
     }
@@ -670,6 +672,7 @@ void createMenus() {
 void pointlessFunction(int a) {}
 
 //TAŒMA FUNCTIONS
+/*
 Box* findBox(int x, int y){
     int horizontalDirection = x-windowWidth/2 ;
     int verticalDirection =  windowHeight/2-y ;
@@ -699,4 +702,4 @@ Box* findBox(int x, int y){
         point[2]-=mRotateZ;
     }
     return NULL;
-}
+}*/

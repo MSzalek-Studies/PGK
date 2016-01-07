@@ -1,11 +1,16 @@
 #include "Box.h"
 #include "GL/glu.h"
 #include "Gl/glut.h"
-Box::Box(float basePoint[], float size)
+Box::Box(float basePoint[])
 {
     for (int i=0; i<3; i++)
         this->basePoint[i]=basePoint[i];
-    this->size=size;
+}
+
+Box::Box()
+{
+    for (int i=0; i<3; i++)
+        basePoint[i]=0;
 }
 
 Box::~Box()
@@ -13,12 +18,35 @@ Box::~Box()
     //dtor
 }
 
+float Box::getPositionX()
+{
+    return basePoint[0];
+}
+
+float Box::getPositionY()
+{
+    return basePoint[1];
+}
+float Box::getPositionZ()
+{
+    return basePoint[2];
+}
+void Box::rotateZ(float rotationValue)
+{
+    rotationZ+=rotationValue;
+}
 bool Box::containsPoint(float point[])
 {
     bool result=true;
     for (int i=0; i<3; i++)
         result=result && point[i]>basePoint[i] && point[i]<basePoint[i]+size;
     return result;
+}
+void Box::move(float directionX, float directionY, float directionZ)
+{
+    basePoint[0]+=directionX;
+    basePoint[1]+=directionY;
+    basePoint[2]+=directionZ;
 }
 
 void Box::display(){
@@ -36,6 +64,9 @@ void Box::display(){
     glPushMatrix();
     glColor3f(1,1,0);
     glTranslatef(basePoint[0],basePoint[1],basePoint[2]);
+    glTranslatef(size/2,size/2,size/2);
+    glRotatef(rotationZ,0,0,1);
+    glTranslatef(-size/2,-size/2,-size/2);
     drawWall(vertex[0],vertex[1],vertex[2],vertex[3]);
     drawWall(vertex[0],vertex[1],vertex[5],vertex[4]);
     drawWall(vertex[1],vertex[2],vertex[6],vertex[5]);
