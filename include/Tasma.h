@@ -17,9 +17,11 @@ class Tasma
         virtual ~Tasma();
         void draw();
         void keepProduction();
+        bool texturesEnabled=true;
     protected:
     private:
         GLuint mainTexture;
+        GLuint blackHoleTexture;
         float startingPoint[3];
         float length=24;
         float height=3;
@@ -30,8 +32,16 @@ class Tasma
         bool shouldMakeNewBox=true;
         vector<Box*> onLineBoxes;
         vector<Box*> underLineBoxes;
-        const float displacementModifier=0.001;
+        const float displacementModifier=0.01;
 
+        void drawNiszczarka();
+        void drawStojak();
+        void drawStojaks();
+        void drawProstopadloscian(float mLength, float mHeight, float mWidth);
+        void drawWall(float vertexA[], float vertexB[], float vertexC[], float vertexD[]);
+        void drawCircle();
+        void displaySideWalls();
+        void displaySideWall();
         void switchBoxState(Box* box, vector<Box*> &sourceVector, vector<Box*> &destinyVector);
         void displayVectorOfBoxes(vector<Box*> myVector);
         void removeBoxFromVector(Box* box, vector<Box*> &mVector);
@@ -44,7 +54,7 @@ class Tasma
         GLuint loadTexture(Image* image);
         void drawMainCos();
         void drawSquarish(float length);
-        void loadTexture();
+        void loadTextures();
         void drawPlane();
         void drawCylinder();
         void increaseDisplacement();

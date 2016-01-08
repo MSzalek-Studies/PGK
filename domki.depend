@@ -347,7 +347,7 @@
 	<fstream>
 	"imageloader.h"
 
-1451896485 source:d:\prywatne\grafika\main.cpp
+1452259181 source:d:\prywatne\grafika\main.cpp
 	<windows.h>
 	<GL/gl.h>
 	<GL/glu.h>
@@ -394,7 +394,7 @@
 
 1450876901 d:\prywatne\grafika\include\utils.h
 
-1451899042 source:d:\prywatne\grafika\src\tasma.cpp
+1452259544 source:d:\prywatne\grafika\src\tasma.cpp
 	"Tasma.h"
 	<GL/glu.h>
 	<GL/glut.h>
@@ -404,7 +404,7 @@
 	<iostream>
 	<vector>
 
-1451911316 d:\prywatne\grafika\include\tasma.h
+1452259397 d:\prywatne\grafika\include\tasma.h
 	<GL/gl.h>
 	<GL/glut.h>
 	"imageloader.h"

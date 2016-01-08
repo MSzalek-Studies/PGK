@@ -10,7 +10,7 @@ using namespace std;
 
 Tasma::Tasma(float startingPoint[])
 {
-    loadTexture();
+    loadTextures();
     this->startingPoint[0]=startingPoint[0];
     this->startingPoint[1]=startingPoint[1];
     this->startingPoint[2]=startingPoint[2];
@@ -32,19 +32,145 @@ void Tasma::draw(){
         glTranslatef(startingPoint[0],startingPoint[1]+height, startingPoint[2]+width/2);
         glPushMatrix();
 
-        glBindTexture(GL_TEXTURE_2D,mainTexture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri( GL_TEXTURE_2D, mainTexture, GL_REPEAT);
-
         drawMainCos();
-        drawBoxMaker();
+        drawNiszczarka();
 
+        glDisable(GL_TEXTURE_2D);
+        drawBoxMaker();
+        displaySideWalls();
+        drawStojaks();
         glPopMatrix();
     glPopMatrix();
     displayBoxes();
+    if(texturesEnabled)
+    glEnable(GL_TEXTURE_2D);
+}
+void Tasma::displaySideWalls()
+{
+    displaySideWall();
+    glPushMatrix();
+    glTranslatef(0,0,width);
+    displaySideWall();
+    glPopMatrix();
+}
+void Tasma::displaySideWall()
+{
+    glColor3f(0.1,0.1,0.1);
+    glBegin(GL_QUADS);
+    glVertex3f(0,0,0);
+    glVertex3f(length,0,0);
+    glVertex3f(length,-thickness,0);
+    glVertex3f(0,-thickness,0);
+    glEnd();
+
+    drawCircle();
+}
+
+void Tasma::drawNiszczarka()
+{
+    glPushMatrix();
+    glTranslatef(length+2.4*height,-height+0.1,width/2);
+    glBindTexture(GL_TEXTURE_2D,blackHoleTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri( GL_TEXTURE_2D, blackHoleTexture, GL_REPEAT);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0,0);
+    glVertex3f(-width*0.7,0,-width/2);
+    glTexCoord2f(0,1);
+    glVertex3f(-width*0.7,0,width/2);
+    glTexCoord2f(1,1);
+    glVertex3f(width*0.7,0,width/2);
+    glTexCoord2f(1,0);
+    glVertex3f(width*0.7,0,-width/2);
+    glEnd();
+    glPopMatrix();
+}
+void Tasma::drawCircle()
+{
+    glPushMatrix();
+    glTranslatef(length,-thickness/2,0);
+    for (int i=0; i<360; i+=3)
+    {
+        glPushMatrix();
+        glRotatef(i,0,0,1);
+        glBegin(GL_QUADS);
+        glVertex3f(-thickness/100,thickness/2,0);
+        glVertex3f(thickness/100,thickness/2,0);
+        glVertex3f(thickness/100,-thickness/2,0);
+        glVertex3f(-thickness/100,-thickness/2,0);
+        glEnd();
+        glPopMatrix();
+    }
+    glPopMatrix();
+}
+
+void Tasma::drawStojaks()
+{
+    for (int j=0; j<2; j++)
+    {
+        glPushMatrix();
+        if (j==0)
+            glTranslatef(0,0,-0.1);
+        else
+            glTranslatef(0,0,width+0.1);
+
+        for (int i=length/4; i<=length; i+=length/4)
+        {
+            glPushMatrix();
+            glTranslatef(i,-height,0);
+            drawStojak();
+            glPopMatrix();
+        }
+        glPopMatrix();
+    }
 
 }
+void Tasma::drawStojak()
+{
+    float wysoksocPodkladki=0.3;
+    drawProstopadloscian(1,wysoksocPodkladki,1);
+    glPushMatrix();
+    glTranslatef(0,wysoksocPodkladki,0);
+    drawProstopadloscian(0.2,height-wysoksocPodkladki,0.2);
+    glPopMatrix();
+}
+void Tasma::drawProstopadloscian(float mLength, float mHeight, float mWidth)
+{
+    glPushMatrix();
+    glTranslatef(-mLength/2,0,-mWidth/2);
+    float vertex[8][3]={
+        0,0,0,
+        mLength,0,0,
+        mLength,0,mWidth,
+        0,0,mWidth,
+        0,mHeight,0,
+        mLength,mHeight,0,
+        mLength,mHeight,mWidth,
+        0,mHeight,mWidth
+        };
+    drawWall(vertex[0],vertex[1],vertex[2],vertex[3]);
+    drawWall(vertex[0],vertex[1],vertex[5],vertex[4]);
+    drawWall(vertex[1],vertex[2],vertex[6],vertex[5]);
+    drawWall(vertex[2],vertex[3],vertex[7],vertex[6]);
+    drawWall(vertex[3],vertex[0],vertex[4],vertex[7]);
+    drawWall(vertex[4],vertex[5],vertex[7],vertex[6]);
+    glPopMatrix();
+}
+void Tasma::drawWall(float vertexA[], float vertexB[], float vertexC[], float vertexD[])
+{
+    glBegin(GL_QUADS);
+    //glTexCoord2f(0,0);
+    glVertex3fv(vertexA);
+    //glTexCoord2f(1,0);
+    glVertex3fv(vertexB);
+    //glTexCoord2f(1,1);
+    glVertex3fv(vertexC);
+    //glTexCoord2f(0,1);
+    glVertex3fv(vertexD);
+    glEnd();
+}
+
 void Tasma::displayBoxes()
 {
     displayVectorOfBoxes(onLineBoxes);
@@ -62,7 +188,13 @@ void Tasma::displayVectorOfBoxes(vector<Box*> myVector)
 }
 void Tasma::drawMainCos()
 {
+    glBindTexture(GL_TEXTURE_2D,mainTexture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri( GL_TEXTURE_2D, mainTexture, GL_REPEAT);
+
     drawPlane();
+
     glPushMatrix();
         glTranslatef(length,-1*thickness,width);
         glRotatef(180,0,1,0);
@@ -77,10 +209,21 @@ void Tasma::drawMainCos()
 void Tasma::drawBoxMaker()
 {
     float boxPadding=0.2;
+    float boxMakerSize=height+thickness+Box::size+boxPadding;
     glPushMatrix();
-    glTranslatef(0,-thickness,(width+thickness)/2);
+    glTranslatef(0,-thickness,(width)/2);
     glColor3f(0.5,0.5,0.5);
-    glutSolidCube(height+thickness+Box::size+boxPadding);
+    glutSolidCube(boxMakerSize);
+    glPopMatrix();
+    glPushMatrix();
+    glTranslatef(boxMakerSize/2+0.1,0,0);
+    glColor3f(0,0,0);
+    glBegin(GL_QUADS);
+    glVertex3f(0,-thickness,-boxPadding);
+    glVertex3f(0,Box::size+boxPadding,-boxPadding);
+    glVertex3f(0,Box::size+boxPadding,width+boxPadding);
+    glVertex3f(0,-thickness,width+boxPadding);
+    glEnd();
     glPopMatrix();
 }
 
@@ -90,12 +233,7 @@ void Tasma::keepProduction()
     if (shouldMakeNewBox)
     {
         float tab[]={startingPoint[0],startingPoint[1]+height,startingPoint[2]+width/2+Box::size};
-        /*cout<<"przy tworzeniu pudelka:";
-        for (int i=0; i<3; i++)
-            cout<<startingPoint[i]<<" ";
-        cout<<endl;*/
         onLineBoxes.push_back(new Box(tab));
-        //cout<<startingPoint[0]<<" "<<startingPoint[1]<<" "<<startingPoint[2]<<endl;
         cout<<displacement<<endl;
         shouldMakeNewBox=false;
     }
@@ -115,21 +253,19 @@ void Tasma::moveBoxes()
 }
 void Tasma::moveSingleBox(Box* box)
 {
-    if (box->getPositionX()<startingPoint[0]+length-2*Box::size/3)
+    if (box->getPositionX()<startingPoint[0]+length-Box::size/3)
     {
         box->move(3*displacementModifier,0,0);
     }
     else
     {
-        box->rotateZ(-100*displacementModifier);
+        box->rotateZ(-80*displacementModifier);
         box->move(2*displacementModifier,-0.01,0);
     }
 
     if (box->getPositionY()<-3)
     {
-        cout<<"przed"<<onLineBoxes.size()<<endl;
         destroyBox(box);
-        cout<<"po"<<onLineBoxes.size()<<endl;
     }
 }
 void Tasma::destroyBox(Box* box)
@@ -147,9 +283,6 @@ void Tasma::Click(int x, int y, int windowWidth, int windowHeight, float angleXZ
     float mRotateY=sin(mAngleY);
     float mRotateX=sin(mAngleXZ)*cos(mAngleY);
     float mRotateZ=cos(mAngleXZ)*cos(mAngleY);
-
-    //cout<<"coos"<<endl;
-    //    cout<<"BOX1"<<" "<<onLineBoxes[0]->getPositionX()<<" "<<onLineBoxes[0]->getPositionY()<<" "<<onLineBoxes[0]->getPositionZ()<<endl;
 
     Box* boksik=findBox(positionXYZ,mRotateX,mRotateY,mRotateZ,onLineBoxes);
     if (boksik!=NULL)
@@ -180,10 +313,8 @@ Box* Tasma::findBox(float positionXYZ[3], float mRotateX, float mRotateY, float 
         for (int j=0; j<boxVector.size(); j++)
         {
             float point[]={positionXYZ[0], positionXYZ[1], positionXYZ[2]};
-            for (int i=0; i<60; i+=1)
+            for (int i=0; i<100; i+=1)
             {
-  //              if (j==0)
-//                cout<<point[0]<<" "<<point[1]<<" "<<point[2]<<endl;
                 if (boxVector[j]->containsPoint(point))
                     return boxVector[j];
 
@@ -199,16 +330,12 @@ Box* Tasma::findBox(float positionXYZ[3], float mRotateX, float mRotateY, float 
 
 void Tasma::removeBoxFromVector(Box* box, vector<Box*> &mVector)
 {
-    cout<<"przed"<<mVector.size()<<endl;
     vector<Box*>::iterator it=mVector.begin();
     while (it!=mVector.end() && *it!=box )
         it++;
 
-
     if (it!=mVector.end())
         mVector.erase(it);
-
-    cout<<"po"<<mVector.size()<<endl;
 }
 void Tasma::drawCylinder()
 {
@@ -292,9 +419,11 @@ GLuint Tasma::loadTexture(Image* image) {
 				 image->pixels);               //The actual pixel data
 	return textureId; //Returns the id of the texture
 }
-void Tasma::loadTexture()
+void Tasma::loadTextures()
 {
-    Image* obrazek=loadBMP("D:\\Prywatne\\grafika\\brick_texture.bmp");
+    Image* obrazek=loadBMP("D:\\Prywatne\\grafika\\tasma_texture.bmp");
     mainTexture=loadTexture(obrazek);
+    obrazek=loadBMP("D:\\Prywatne\\grafika\\blackhole_texture.bmp");
+    blackHoleTexture=loadTexture(obrazek);
     delete obrazek;
 }

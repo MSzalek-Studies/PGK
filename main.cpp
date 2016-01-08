@@ -52,7 +52,7 @@ using namespace std;
 bool isTurningNormal=false; //DO USTAWIENIA
 int windowHeight=600, windowWidth=800;
 float angle=1.6, angleY=-0.3, ratio;
-float positionX=-5, positionY=2, positionZ=0;
+float positionX=-5, positionY=4, positionZ=0;
 float rotateX=0, rotateY=-0.5, rotateZ=0;
 int moveDirection=0, rotateDirection=0;
 float moveSpeed=0.1, rotateSpeed=0.005;
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
     glutMouseFunc(onMouseButtonPressed);
     float tab[3]={10,10,10};
     box=new Box(tab);
-    float point[3]={-10,0,-10};
+    float point[3]={-30,0,-10};
     tasma=new Tasma(point);
     glutMainLoop();
     return EXIT_SUCCESS;
@@ -149,7 +149,6 @@ void Draw() {
     if (light3_enabled)
         drawLight3();
 
-    //cout<<angle<<" "<<angleY<<endl;
     glutSwapBuffers();
 }
 
@@ -168,7 +167,6 @@ void Reshape(int width, int height) {
     gluPerspective(45, ratio, 1, 1000);
     glMatrixMode(GL_MODELVIEW);
     refreshLooking();
-             //  glutPostRedisplay();
 }
 
 void initColors() {
@@ -237,7 +235,10 @@ void switchTexturing(){
         glDisable(GL_TEXTURE_2D);
     else
         glEnable(GL_TEXTURE_2D);
+
+cout<<"kupaaaaa"<<endl;
     texturesEnabled=!texturesEnabled;
+    tasma->texturesEnabled=texturesEnabled;
 }
 void initStars() {
     if (skyColor[0]==0 && skyColor[1]==0 && skyColor[2]==0)
@@ -670,36 +671,3 @@ void createMenus() {
 }
 
 void pointlessFunction(int a) {}
-
-//TAŒMA FUNCTIONS
-/*
-Box* findBox(int x, int y){
-    int horizontalDirection = x-windowWidth/2 ;
-    int verticalDirection =  windowHeight/2-y ;
-
-    //TODO
-    float mAngleXZ=angle+horizontalDirection*M_PI_4/(1.0*windowWidth);
-    float mAngleY=angleY+verticalDirection*M_PI_4/(1.0*windowHeight);
-
-
-    float mRotateY=sin(mAngleY);
-    float mRotateX=sin(mAngleXZ)*cos(mAngleY);
-    float mRotateZ=cos(mAngleXZ)*cos(mAngleY);
-
-    cout<<horizontalDirection<<" "<<verticalDirection<<endl;
-    cout<<angle<<" "<<angleY<<endl;
-    cout<<mAngleXZ<<" "<<mAngleY<<endl;
-    cout<<mRotateX<<" "<<mRotateY<<" "<<mRotateZ<<endl;
-    float point[]={positionX,positionY,positionZ};
-    for (int i=0; i<100; i+=1)
-    {
-        cout<<point[0]<<" "<<point[1]<<" "<<point[2]<<endl;
-        if (box->containsPoint(point))
-            return box;
-
-        point[0]+=mRotateX;
-        point[1]+=mRotateY;
-        point[2]-=mRotateZ;
-    }
-    return NULL;
-}*/
